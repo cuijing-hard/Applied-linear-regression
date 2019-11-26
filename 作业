@@ -1,1 +1,70 @@
+2019011248-崔静-回归作业-变异值实例分析
+使用R内置函数计算
+mt<-read.table("clipboard",header=T)
+mt
+mp<-data.frame(mt)
+fit<-lm(mp$y~mp$x1+mp$x2)
+fit
+summary(fit)
+普通残差
+res<-residuals(fit)
+学生化残差
+rst<-rstandard(fit)
+删除学生化残差
+rst1<-rstudent(fit)
+中心化杠杆值
+hat<-hatvalues(fit)
+chat <- hat-1/15
+chat
+库克距离
+cook <- cooks.distance(fit)
+cook
+删除残差
+t<-(1-hat)
+t
+res1<-res/t
+res1
+data4.6 <- data.frame(mp$x1,mp$x2,mp$y,res,rst,res1,rst1,chat,cook)
+data4.6
 
+不用R内置函数计算
+y.pre <- predict(fit) 
+y.pre
+X3=c(rep(1,15))
+X3
+X1<-(mp$x1)
+X1
+X2<-c(mp$x2)
+X2
+X<-as.matrix(cbind(X3,X1,X2))
+X
+Y <- as.matrix(mp$y)
+Y
+H <- X%*%solve(t(X)%*%X)%*%t(X)
+H
+hii <- diag(H)
+hii
+计算普通残差
+ei <- Y-y.pre 
+ei
+计算学生化残差
+p<-2
+p
+s.hat<-t(ei)%*%ei/(15-p-1)
+s.hat
+student.ei<-ei/sqrt(s.hat*(1-hii))
+student.ei
+计算删除残差
+ei1<-ei/(1-hii)
+ei1
+计算删除学生化残差
+student.ei1 <- student.ei*sqrt((15-p-2)/(15-p-1-student.ei^2))
+student.ei1
+计算杠杆值
+chat<- hii-1/15
+chat
+计算库克距离
+cook<-(hii*ei^2)/((p+1)*s.hat*(1-hii)^2)
+cook
+data4.6 <- data.frame(X1,X2,Y,ei,student.ei,ei1,student.ei1,chat,cook)
+data4.6
